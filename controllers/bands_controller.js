@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const db = require('../models')
-const { Band } = db
+const { Band, MeetGreet } = db
 const { Op } = require('sequelize')
 
 // INDEX
@@ -19,12 +19,15 @@ router.get('/', async (req, res) => {
 });
 
 // SHOW
-router.get('/:id', async (req, res) => {
+router.get('/:name', async (req, res) => {
     try {
         const findBand = await Band.findOne({
-            where: {band_id: req.params.id}
+            where: {name: { [Op.like]: req.params.name }},
+            include: {model: MeetGreet, as: 'meet_greets'}
         })
+
         res.status(200).json(findBand)
+
     } catch (error) {
         res.status(500).json(error)
     }
